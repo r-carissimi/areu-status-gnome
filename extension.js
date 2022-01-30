@@ -4,6 +4,15 @@ For general infos see metadata.json
 For style directives refer to stylesheet.css
 */
 
+/*
+
+If you want to test the extension in a sanboxed environment that 
+displays only this estension's logs please use the following command
+
+dbus-run-session -- gnome-shell --nested --wayland 2>&1 >/dev/null | grep 'carissimi.eu'
+
+*/
+
 /* Imports */
 const St = imports.gi.St;
 const Main = imports.ui.main;
@@ -33,8 +42,6 @@ const AAT = "MILANO";
 let auth = "";
 //Is needed for the HTTP fetcher
 let _httpSession;
-
-// TEST CMD = dbus-run-session -- gnome-shell --nested --wayland 2>&1 >/dev/null | grep 'carissimi.eu'
 
 /* The class that represents the button, extends PanelMenu.Button */
 const AREUIndicator = new Lang.Class({
