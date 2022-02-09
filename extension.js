@@ -242,6 +242,130 @@ const AREUIndicator = new Lang.Class({
 	vehicles.menu.box.add(boxMSA);
 	vehicles.menu.box.add(boxELI);
 	
+	//Reasons indicator
+	let reasons = new PopupMenu.PopupSubMenuMenuItem('Motivi');
+
+	this.textMedicoAcuto = new St.Label({
+		style_class: "menu-text menu-updatable",
+      	text: _("0"),
+    });
+	let nameMedicoAcuto = new St.Label({
+		style_class: "menu-text",
+      	text: _("Medico Acuto: "),
+    });
+	let iconMedicoAcuto = new St.Icon({
+		gicon: Gio.icon_new_for_string(`${Me.path}/icons/medico_acuto.png`),
+		style_class: "icon reason-icon",
+	});
+	let boxMedicoAcuto = new St.BoxLayout({
+		style_class: "menu-item"
+	});
+	boxMedicoAcuto.add_actor(iconMedicoAcuto);
+	boxMedicoAcuto.add_actor(nameMedicoAcuto);
+	boxMedicoAcuto.add_actor(this.textMedicoAcuto);
+
+	this.textCaduta = new St.Label({
+		style_class: "menu-text menu-updatable",
+      	text: _("0"),
+    });
+	let nameCaduta = new St.Label({
+		style_class: "menu-text",
+      	text: _("Caduta: "),
+    });
+	let iconCaduta = new St.Icon({
+		gicon: Gio.icon_new_for_string(`${Me.path}/icons/caduta.png`),
+		style_class: "icon reason-icon",
+	});
+	let boxCaduta = new St.BoxLayout({
+		style_class: "menu-item"
+	});
+	boxCaduta.add_actor(iconCaduta);
+	boxCaduta.add_actor(nameCaduta);
+	boxCaduta.add_actor(this.textCaduta);
+
+	this.textIncidenteStradale = new St.Label({
+		style_class: "menu-text menu-updatable",
+      	text: _("0"),
+    });
+	let nameIncidenteStradale = new St.Label({
+		style_class: "menu-text",
+      	text: _("Incidente: "),
+    });
+	let iconIncidenteStradale = new St.Icon({
+		gicon: Gio.icon_new_for_string(`${Me.path}/icons/inc_stradale.png`),
+		style_class: "icon reason-icon",
+	});
+	let boxIncidenteStradale = new St.BoxLayout({
+		style_class: "menu-item"
+	});
+	boxIncidenteStradale.add_actor(iconIncidenteStradale);
+	boxIncidenteStradale.add_actor(nameIncidenteStradale);
+	boxIncidenteStradale.add_actor(this.textIncidenteStradale);
+
+	this.textInfortunio = new St.Label({
+		style_class: "menu-text menu-updatable",
+      	text: _("0"),
+    });
+	let nameInfortunio = new St.Label({
+		style_class: "menu-text",
+      	text: _("Infortunio: "),
+    });
+	let iconInfortunio = new St.Icon({
+		gicon: Gio.icon_new_for_string(`${Me.path}/icons/infortunio.png`),
+		style_class: "icon reason-icon",
+	});
+	let boxInfortunio = new St.BoxLayout({
+		style_class: "menu-item"
+	});
+	boxInfortunio.add_actor(iconInfortunio);
+	boxInfortunio.add_actor(nameInfortunio);
+	boxInfortunio.add_actor(this.textInfortunio);
+
+	this.textEventoViolento = new St.Label({
+		style_class: "menu-text menu-updatable",
+      	text: _("0"),
+    });
+	let nameEventoViolento = new St.Label({
+		style_class: "menu-text",
+      	text: _("Evento Violento: "),
+    });
+	let iconEventoViolento = new St.Icon({
+		gicon: Gio.icon_new_for_string(`${Me.path}/icons/evento_violento.png`),
+		style_class: "icon reason-icon",
+	});
+	let boxEventoViolento = new St.BoxLayout({
+		style_class: "menu-item"
+	});
+	boxEventoViolento.add_actor(iconEventoViolento);
+	boxEventoViolento.add_actor(nameEventoViolento);
+	boxEventoViolento.add_actor(this.textEventoViolento);
+
+	this.textIntossicazione = new St.Label({
+		style_class: "menu-text menu-updatable",
+      	text: _("0"),
+    });
+	let nameIntossicazione = new St.Label({
+		style_class: "menu-text",
+      	text: _("Intossicazione: "),
+    });
+	let iconIntossicazione = new St.Icon({
+		gicon: Gio.icon_new_for_string(`${Me.path}/icons/intossicazione.png`),
+		style_class: "icon reason-icon",
+	});
+	let boxIntossicazione = new St.BoxLayout({
+		style_class: "menu-item"
+	});
+	boxIntossicazione.add_actor(iconIntossicazione);
+	boxIntossicazione.add_actor(nameIntossicazione);
+	boxIntossicazione.add_actor(this.textIntossicazione);
+
+	reasons.menu.box.add(boxMedicoAcuto);
+	reasons.menu.box.add(boxCaduta);
+	reasons.menu.box.add(boxIncidenteStradale);
+	reasons.menu.box.add(boxInfortunio);
+	reasons.menu.box.add(boxEventoViolento);
+	reasons.menu.box.add(boxIntossicazione);	
+
 	// Add the "last update" indicator
 	let lastUpdateIndicator = new St.Label({
 		style_class: "menu-text",
@@ -260,6 +384,7 @@ const AREUIndicator = new Lang.Class({
 	// Assemble all menu items
 	this.menu.addMenuItem(colorCodes);
 	this.menu.addMenuItem(vehicles);
+	this.menu.addMenuItem(reasons);
 	this.menu.box.add(lastUpdate);
 	
   },
@@ -270,10 +395,19 @@ const AREUIndicator = new Lang.Class({
 	this.textYellow.set_text(json.giallo);
 	this.textGreen.set_text(json.verde);
 	this.textWhite.set_text(json.bianco);
+	
 	this.textMSB.set_text(json.msb);
 	this.textMSI.set_text(json.msi);
 	this.textMSA.set_text(json.msa);
 	this.textELI.set_text(json.elisoccorso);
+
+	this.textMedicoAcuto.set_text(json.medico_acuto);
+	this.textCaduta.set_text(json.caduta);
+	this.textIncidenteStradale.set_text(json.incidente_stradale);
+	this.textInfortunio.set_text(json.infortunio);
+	this.textEventoViolento.set_text(json.evento_violento);
+	this.textIntossicazione.set_text(json.intossicazione);
+
 	this.lastUpdateHour.set_text(json.aggiornato_alle);
   },
   
