@@ -42,7 +42,7 @@ Done!
 
 ## TODO
 
-- [ ] Let the user choose the AAT
 - [X] Create a menu with all the available data
-- [ ] Display an 🚁 helicopter icon when *ELI* is in a mission
+- [ ] Let the user choose the AAT
 - [ ] Let the user choose the position on the top bar
+- [ ] Display an 🚁 helicopter icon when *ELI* is in a mission
