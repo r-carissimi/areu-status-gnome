@@ -1,4 +1,27 @@
-.areu-msb-icon{
+.button-icon{
 	margin: 0 4px 0 0;
 	icon-size: 16px;
+}
+
+.menu-item {
+	margin: 8px 20px;
+}
+
+.last-update {
+	margin: 10px 20px;
+}
+
+.icon {
+	icon-size: 16px;
+	margin-right: 10px;
+}
+
+.color-codes-icon {
+	icon-size: 10px;
+	border: gray 2px solid;
+	border-radius: 10px;
+}
+
+.menu-updatable {
+	font-weight: bold;
 }
