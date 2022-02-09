@@ -3,14 +3,14 @@
 	"name" : "AREU Status",
 	"shell-version" : [
 		"3.30",
-    "3.34",
-    "3.32",
-    "3.36",
-    "3.38",
-    "40",
-    "41"
+    	"3.34",
+    	"3.32",
+    	"3.36",
+    	"3.38",
+    	"40",
+    	"41"
 	],
-	"url" : "",
+	"url" : "https://github.com/r-carissimi/areu-status-gnome",
 	"uuid" : "areustatus@carissimi.eu",
 	"version" : 1
 }
