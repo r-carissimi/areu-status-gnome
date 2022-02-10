@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/org/gnome/shell/extensions/areustatus/" id="org.gnome.shell.extensions.areustatus">
+    <key type="i" name="aat">
+      <default>7</default>
+      <summary>Select the province</summary>
+      <description>Selects the province (AAT) where to find ambulances</description>
+    </key>
+	<key type="i" name="position">
+      <default>1</default>
+      <summary>Select the position on the top panel</summary>
+      <description>Select the position on the top panel, 0 = left, 1 = center, 2 = right</description>
+    </key>
+  </schema>
+</schemalist>

@@ -1,5 +1,5 @@
 {
-	"description" : "Just an extension that displays the number of ambulances that are in a mission in the province of Milan, Italy",
+	"description" : "Displays the number of ambulances that are in a mission in Lombardy, Italy",
 	"name" : "AREU Status",
 	"shell-version" : [
 		"3.30",
@@ -12,5 +12,5 @@
 	],
 	"url" : "https://github.com/r-carissimi/areu-status-gnome",
 	"uuid" : "areustatus@carissimi.eu",
-	"version" : 1
+	"version" : 2
 }

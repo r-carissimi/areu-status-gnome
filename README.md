@@ -1,12 +1,12 @@
 # AREU Status - GNOME Extension
-A GNOME extension that displays the number of ambulances out in the province of Milan, Italy.
+A GNOME extension that displays the number of ambulances out in Lombardy, Italy.
 It uses the data available at the [official website](https://www.areu.lombardia.it/web/home/missioni-aat-real-time) of AREU, the agency that coordinates the ambulances in Lombardy, Italy.
 
-Please note that the number only refers to ambulances in the **Province of Milan**. You can change the province by changing the constant called `AAT` in [extension.js](https://github.com/r-carissimi/areu-status-gnome/blob/main/extension.js).
+Please note that <u>by default</u> the number only refers to ambulances in the **Province of Milan**. You can change the province in extension settings (use the "extensions" app and click on the gear icon, if provided by your distro).
 
 
 
-![Extension preview](https://i.imgur.com/5XnuT6h.png)
+![Extension preview](https://i.imgur.com/jpNg1XF.png)
 
 
 
@@ -43,6 +43,6 @@ Done!
 ## TODO
 
 - [X] Create a menu with all the available data
-- [ ] Let the user choose the AAT
-- [ ] Let the user choose the position on the top bar
+- [X] Let the user choose the AAT
+- [X] Let the user choose the position on the top bar
 - [ ] Display an 🚁 helicopter icon when *ELI* is in a mission

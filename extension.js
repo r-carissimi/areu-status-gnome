@@ -2,6 +2,8 @@
 This is the main file for areustatus@carissimi.eu
 For general infos see metadata.json
 For style directives refer to stylesheet.css
+Prefs.js defines preferences window
+Schemas define settings (extension long term storage)
 */
 
 /*
@@ -36,8 +38,6 @@ const TOKEN_KEY = "Liferay.authToken=";
 const TOKEN_LENGTH = 8;
 //Refresh time in seconds
 const SECONDS = 120;
-//AAT (province) you want to show
-const AAT = "MILANO";
 
 //Global variable for the current token
 let auth = "";
@@ -53,6 +53,8 @@ const AREUIndicator = new Lang.Class({
   _init: function () {
 	//Calls the super constructor
     this.parent(0.0, "AREU Indicator", false);
+
+	this.settings = getSettings();
 
 	//Creates the box that joins the icon and the label
 	this._createButton();
@@ -485,13 +487,7 @@ const AREUIndicator = new Lang.Class({
 	const PERIOD = "in_corso";
 	
 	//Finds the right AAT (province), it's associated to an index
-	let ret;
-	for(let i = 0; i<json[PERIOD].length;i++){
-		if(json[PERIOD][i].aat == AAT.toUpperCase()){
-		ret = json[PERIOD][i];
-		break;
-		}
-	}
+	let ret = json[PERIOD][this.settings.get_int('aat')]
 
 	global.log("areustatus@carissimi.eu -> updated data (last update " + ret.aggiornato_alle + ")");
 
@@ -521,7 +517,13 @@ const AREUIndicator = new Lang.Class({
     this._timeout = undefined;
 
     this.menu.removeAll();
-  }
+  },
+
+  	/* Returns the position on the panel, based on settings */
+  	get positionInPanel() {
+		let positions = [ 'left', 'center', 'right' ];
+		return positions[this.settings.get_int('position')];
+	}
 });
 
 //Variable for the button object
@@ -529,17 +531,34 @@ let areuMenu;
 
 /* This is run when you install the extension */
 function init() {
+
 }
 
 /* This is run when you enable the extension */
 function enable() {
 	areuMenu = new AREUIndicator;
-	//Main.panel.addToStatusArea('areu-indicator', areuMenu);
-	Main.panel._addToPanelBox('areu-indicator', areuMenu, 1, Main.panel._centerBox);
+	let positionInPanel = areuMenu.positionInPanel;
+	Main.panel.addToStatusArea('areu-indicator', areuMenu, positionInPanel == 'right' ? 1 : -1, positionInPanel);
 }
 
 /* This is run when you disable the extension */
 function disable() {
 	areuMenu.stop();
 	areuMenu.destroy();
+}
+
+/* Returns the settings object, used to memorize settings */
+function getSettings() {
+	let GioSSS = Gio.SettingsSchemaSource;
+	let schemaSource = GioSSS.new_from_directory(
+	  	Me.dir.get_child("schemas").get_path(),
+	  	GioSSS.get_default(),
+	  	false
+	);
+	let schemaObj = schemaSource.lookup(
+		'org.gnome.shell.extensions.areustatus', true);
+	if (!schemaObj) {
+		throw new Error('cannot find schemas');
+	}
+	return new Gio.Settings({ settings_schema : schemaObj });
 }
