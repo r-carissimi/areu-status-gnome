@@ -9,6 +9,7 @@ const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 const Gio = imports.gi.Gio;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const ExtensionUtils = imports.misc.extensionUtils;
 
 
 function init(){
@@ -19,24 +20,7 @@ function buildPrefsWidget(){
 	let widget = new MyPrefsWidget();
 	widget.show_all();
 	return widget; 
-}
-
-/* Returns the settings object, used to memorize settings */
-function getSettings() {
-	let GioSSS = Gio.SettingsSchemaSource;
-	let schemaSource = GioSSS.new_from_directory(
-	  	Me.dir.get_child("schemas").get_path(),
-	  	GioSSS.get_default(),
-	  	false
-	);
-	let schemaObj = schemaSource.lookup(
-		'org.gnome.shell.extensions.areustatus', true);
-	if (!schemaObj) {
-		throw new Error('cannot find schemas');
-	}
-	return new Gio.Settings({ settings_schema : schemaObj });
-}
-  
+} 
 
 const MyPrefsWidget = new GObject.Class({
 	Name : "AREU Status Settings",
@@ -49,7 +33,7 @@ const MyPrefsWidget = new GObject.Class({
 		this.set_spacing(15);
 		this.set_orientation(Gtk.Orientation.VERTICAL);
 
-		this.settings = getSettings();
+		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.areustatus');
 
 		/*
         ** AAT SELECTOR

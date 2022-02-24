@@ -25,6 +25,7 @@ const Clutter = imports.gi.Clutter;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const ExtensionUtils = imports.misc.extensionUtils;
 const Gio = imports.gi.Gio;
 
 /* Constants declaration */
@@ -54,7 +55,7 @@ const AREUIndicator = new Lang.Class({
 	//Calls the super constructor
     this.parent(0.0, "AREU Indicator", false);
 
-	this.settings = getSettings();
+	this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.areustatus');
 
 	//Creates the box that joins the icon and the label
 	this._createButton();
@@ -89,7 +90,7 @@ const AREUIndicator = new Lang.Class({
 	box.add_actor(this.buttonText);
 
 	//Add the box to the button
-	this.actor.add_child(box);
+	this.add_child(box);
   },
 
   /* Initializes the menu */
@@ -545,20 +546,5 @@ function enable() {
 function disable() {
 	areuMenu.stop();
 	areuMenu.destroy();
-}
-
-/* Returns the settings object, used to memorize settings */
-function getSettings() {
-	let GioSSS = Gio.SettingsSchemaSource;
-	let schemaSource = GioSSS.new_from_directory(
-	  	Me.dir.get_child("schemas").get_path(),
-	  	GioSSS.get_default(),
-	  	false
-	);
-	let schemaObj = schemaSource.lookup(
-		'org.gnome.shell.extensions.areustatus', true);
-	if (!schemaObj) {
-		throw new Error('cannot find schemas');
-	}
-	return new Gio.Settings({ settings_schema : schemaObj });
+	areuMenu = null;
 }
