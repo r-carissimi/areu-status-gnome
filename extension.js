@@ -19,7 +19,6 @@ dbus-run-session -- gnome-shell --nested --wayland 2>&1 >/dev/null | grep 'caris
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Soup = imports.gi.Soup;
-const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 const Clutter = imports.gi.Clutter;
 const PanelMenu = imports.ui.panelMenu;
@@ -27,6 +26,7 @@ const PopupMenu = imports.ui.popupMenu;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const ExtensionUtils = imports.misc.extensionUtils;
 const Gio = imports.gi.Gio;
+const GObject = imports.gi.GObject;
 
 /* Constants declaration */
 //AREU JSON API link
@@ -46,32 +46,31 @@ let auth = "";
 let _httpSession;
 
 /* The class that represents the button, extends PanelMenu.Button */
-const AREUIndicator = new Lang.Class({
-	Name: 'AREUIndicator',
-	Extends: PanelMenu.Button,
+const AREUIndicator = GObject.registerClass(
+	class AREUIndicator extends PanelMenu.Button {
 
 	/* Is the constructor for the button */
-	_init: function () {
-		//Calls the super constructor
-		this.parent(0.0, "AREU Indicator", false);
+	_init() {
+	//Calls the super constructor
+	super._init(0.0, "AREU Indicator", false);
 
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.areustatus');
+	this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.areustatus');
 
-		//Creates the box that joins the icon and the label
-		this._createButton();
+	//Creates the box that joins the icon and the label
+	this._createButton();
 
-		//Creates the menu
-		this._createMenu();
+	//Creates the menu
+	this._createMenu();
 
-		//Generates a new token
-		this._refreshToken(this._loadData);
+	//Generates a new token
+	this._refreshToken();
 
-		//Starts the label-updating cycle
-		this._refresh();
-	},
+	//Starts the label-updating cycle
+	this._refresh();
+}
 
 	/* Initializes the button in the top bar */
-	_createButton: function () {
+	_createButton() {
 		let box = new St.BoxLayout();
 
 		this.buttonText = new St.Label({
@@ -91,10 +90,10 @@ const AREUIndicator = new Lang.Class({
 
 		//Add the box to the button
 		this.add_child(box);
-	},
+	}
 
 	/* Initializes the menu */
-	_createMenu: function () {
+	_createMenu() {
 		// Color codes submenu
 		let colorCodes = new PopupMenu.PopupSubMenuMenuItem('Codici colore');
 
@@ -390,50 +389,50 @@ const AREUIndicator = new Lang.Class({
 		this.menu.addMenuItem(reasons);
 		this.menu.box.add(lastUpdate);
 
-	},
+	}
 
 	/* Updates menu text from json data */
-	_updateMenu: function (json) {
-		this.textRed.set_text(json.rosso);
-		this.textYellow.set_text(json.giallo);
-		this.textGreen.set_text(json.verde);
-		this.textWhite.set_text(json.bianco);
+	_updateMenu(jsonData) {
+		this.textRed.set_text(jsonData.rosso);
+		this.textYellow.set_text(jsonData.giallo);
+		this.textGreen.set_text(jsonData.verde);
+		this.textWhite.set_text(jsonData.bianco);
 
-		this.textMSB.set_text(json.msb);
-		this.textMSI.set_text(json.msi);
-		this.textMSA.set_text(json.msa);
-		this.textELI.set_text(json.elisoccorso);
+		this.textMSB.set_text(jsonData.msb);
+		this.textMSI.set_text(jsonData.msi);
+		this.textMSA.set_text(jsonData.msa);
+		this.textELI.set_text(jsonData.elisoccorso);
 
-		this.textMedicoAcuto.set_text(json.medico_acuto);
-		this.textCaduta.set_text(json.caduta);
-		this.textIncidenteStradale.set_text(json.incidente_stradale);
-		this.textInfortunio.set_text(json.infortunio);
-		this.textEventoViolento.set_text(json.evento_violento);
-		this.textIntossicazione.set_text(json.intossicazione);
+		this.textMedicoAcuto.set_text(jsonData.medico_acuto);
+		this.textCaduta.set_text(jsonData.caduta);
+		this.textIncidenteStradale.set_text(jsonData.incidente_stradale);
+		this.textInfortunio.set_text(jsonData.infortunio);
+		this.textEventoViolento.set_text(jsonData.evento_violento);
+		this.textIntossicazione.set_text(jsonData.intossicazione);
 
-		this.lastUpdateHour.set_text(json.aggiornato_alle);
-	},
+		this.lastUpdateHour.set_text(jsonData.aggiornato_alle);
+	}
 
 	/* Updates button's text from a string */
-	_updateButton: function (string) {
-		this.buttonText.set_text(string);
-	},
+	_updateButton(str) {
+		this.buttonText.set_text(str);
+	}
 
 	/* Refreshes the data in the button */
-	_refresh: function () {
+	_refresh() {
 		this._loadData(this._refreshUI);
 		this._removeTimeout();
 		//Generates the timer
-		this._timeout = Mainloop.timeout_add_seconds(SECONDS, Lang.bind(this, this._refresh));
+		this._timeout = Mainloop.timeout_add_seconds(SECONDS, this._refresh.bind(this));
 		return true;
-	},
+	}
 
 	/* Refreshes the token, fetched from the AREU's website */
-	_refreshToken: function (_callback) {
+	_refreshToken() {
 		//Fetches a token from the AREU API's
 		_httpSession = new Soup.Session();
 		let message = Soup.Message.new('GET', TOKEN_LINK);
-		_httpSession.queue_message(message, Lang.bind(this, function (_httpSession, message) {
+		_httpSession.queue_message(message, function (_httpSession, message) {
 			if (message.status_code !== 200) {
 				//Nothing is done if page is not correctly fetched
 				return;
@@ -446,14 +445,13 @@ const AREUIndicator = new Lang.Class({
 			global.log("areustatus@carissimi.eu -> Got new token: " + auth);
 			//Updates the data
 			this._loadData();
-		}
-		)
+		}.bind(this)
 		);
 
-	},
+	}
 
 	/* Loads the data from the website and updates the UI */
-	_loadData: function () {
+	_loadData() {
 		//Fetches the data only if there's a token
 		if (auth !== "") {
 			global.log("areustatus@carissimi.eu -> Token is: " + auth);
@@ -465,24 +463,23 @@ const AREUIndicator = new Lang.Class({
 			_httpSession = new Soup.Session();
 			let message = Soup.form_request_new_from_hash('GET', API_LINK, params);
 
-			_httpSession.queue_message(message, Lang.bind(this, function (_httpSession, message) {
+			_httpSession.queue_message(message, function (_httpSession, message) {
 				if (message.status_code !== 200) {
-					//If data is not fetched correctly it tries to refresh the token
-					this._refreshToken(this._refresh());
+					//If data is not fetched correctly it tri es to refresh the token
+					this._refreshToken();
 					return;
 				}
 				//Updates the UI
 				let json = JSON.parse(message.response_body.data);
 				this._refreshUI(json);
-			}
-			)
+			}.bind(this)
 			);
 		}
 
-	},
+	}
 
 	/* Updates the UI with the JSON data */
-	_refreshUI: function (json) {
+	_refreshUI(json) {
 
 		//We want to select only the real time data
 		const PERIOD = "in_corso";
@@ -497,18 +494,18 @@ const AREUIndicator = new Lang.Class({
 		//Sets menu text
 		this._updateMenu(ret);
 
-	},
+	}
 
 	/* Deletes the updating cycle */
-	_removeTimeout: function () {
+	_removeTimeout() {
 		if (this._timeout) {
 			Mainloop.source_remove(this._timeout);
 			this._timeout = null;
 		}
-	},
+	}
 
 	/* Stops the button refresh cycle */
-	stop: function () {
+	stop() {
 		if (_httpSession !== undefined)
 			_httpSession.abort();
 		_httpSession = undefined;
@@ -518,13 +515,13 @@ const AREUIndicator = new Lang.Class({
 		this._timeout = undefined;
 
 		this.menu.removeAll();
-	},
+	}
 
 	/* Returns the position on the panel, based on settings */
 	get positionInPanel() {
-		let positions = ['left', 'center', 'right'];
-		return positions[this.settings.get_int('position')];
-	}
+	let positions =['left', 'center', 'right'];
+	return positions[this.settings.get_int('position')];
+}
 });
 
 //Variable for the button object
