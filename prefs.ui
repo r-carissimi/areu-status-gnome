@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="org.gnome.shell.extensions.areustatus">
+
+	<object class="GtkBox" id="prefs-container">
+	<property name="orientation">vertical</property>
+		<child>
+			<object class="GtkBox" id="aat_title">
+				<property name="visible">True</property>
+				<property name="can-focus">False</property>
+				<property name="margin">12</property>
+				<property name="spacing">8</property>
+				
+				<child>
+				<object class="GtkLabel">
+					<property name="visible">True</property>
+					<property name="can-focus">False</property>
+					<property name="label">Provincia</property>
+					<property name="xalign">0</property>
+				</object>
+				</child>
+
+				<child>
+					<object class="GtkComboBoxText" id="aat_selector">
+					<property name="visible">True</property>
+					<property name="can-focus">True</property>
+					<property name="valign">center</property>
+					<signal name="changed" handler="_AATchanged" swapped="no"/>
+					<items>
+						<item>Bergamo</item>
+						<item>Brescia</item>
+						<item>Como</item>
+						<item>Cremona</item>
+						<item>Lecco</item>
+						<item>Lodi</item>
+						<item>Mantova</item>
+						<item>Milano</item>
+						<item>Monza</item>
+						<item>Pavia</item>
+						<item>Sondrio</item>
+						<item>Varese</item>
+					</items>
+					</object>
+				</child>
+				
+			</object>
+		</child>
+
+		<child>
+			<object class="GtkBox" id="position_title">
+				<property name="visible">True</property>
+				<property name="can-focus">False</property>
+				<property name="margin">12</property>
+				<property name="spacing">8</property>
+				
+				<child>
+				<object class="GtkLabel">
+					<property name="visible">True</property>
+					<property name="can-focus">False</property>
+					<property name="label">Posizione (reload required)</property>
+					<property name="xalign">0</property>
+				</object>
+				</child>
+
+				<child>
+					<object class="GtkComboBoxText" id="position_selector">
+					<property name="visible">True</property>
+					<property name="can-focus">True</property>
+					<property name="valign">center</property>
+					<signal name="changed" handler="_positionChanged" swapped="no"/>
+					<items>
+						<item>Sinistra</item>
+						<item>Centro</item>
+						<item>Destra</item>
+					</items>
+					</object>
+				</child>
+				
+			</object>
+		</child>
+
+	</object>
+</interface>
