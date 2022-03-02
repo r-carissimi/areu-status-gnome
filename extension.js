@@ -481,11 +481,24 @@ const AREUIndicator = GObject.registerClass(
 		/* Updates the UI with the JSON data */
 		_refreshUI(json) {
 
+			//Create the index-to-number association
+			const AATS = ['BERGAMO','BRESCIA','COMO','CREMONA','LECCO','LODI','MANTOVA','MILANO','MONZA','PAVIA','SONDRIO','VARESE'];
 			//We want to select only the real time data
 			const PERIOD = "in_corso";
+			
+			/* 
+			This may seem a rather dumb approach. But is necessary because the
+			AREU's API really like every now and then to change the province
+			position for a while.
+			*/
 
-			//Finds the right AAT (province), it's associated to an index
-			let ret = json[PERIOD][this.settings.get_int('aat')]
+			let ret;
+			for(let i = 0; i<json[PERIOD].length;i++){
+				if(json[PERIOD][i].aat == AATS[this.settings.get_int('aat')].toUpperCase()){
+				ret = json[PERIOD][i];
+				break;
+				}
+			}
 
 			global.log("areustatus@carissimi.eu -> updated data (last update " + ret.aggiornato_alle + ")");
 
