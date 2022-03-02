@@ -50,6 +50,6 @@ function buildPrefsWidget() {
     let settings = new PrefsWidget()
     let widget = settings.widget;
 
-	widget.show_all();
+	widget.show();
 	return widget;
 }
