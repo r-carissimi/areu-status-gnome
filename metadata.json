@@ -8,7 +8,9 @@
     	"3.36",
     	"3.38",
     	"40",
-    	"41"
+    	"41",
+	"42",
+	"43"
 	],
 	"url" : "https://github.com/r-carissimi/areu-status-gnome",
 	"uuid" : "areustatus@carissimi.eu",
