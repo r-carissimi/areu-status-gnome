@@ -26,7 +26,10 @@ const PopupMenu = imports.ui.popupMenu;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const ExtensionUtils = imports.misc.extensionUtils;
 const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
+const ByteArray = imports.byteArray;
+const Config = imports.misc.config;
 
 /* Constants declaration */
 //AREU JSON API link
@@ -39,6 +42,8 @@ const TOKEN_KEY = "Liferay.authToken=";
 const TOKEN_LENGTH = 8;
 //Refresh time in seconds
 const SECONDS = 120;
+//Gets the major Gnome shell version
+const GNOME_VERSION = Config.PACKAGE_VERSION.substring(0, Config.PACKAGE_VERSION.indexOf("."));
 
 //Global variable for the current token
 let auth = "";
@@ -432,21 +437,53 @@ const AREUIndicator = GObject.registerClass(
 			//Fetches a token from the AREU API's
 			_httpSession = new Soup.Session();
 			let message = Soup.Message.new('GET', TOKEN_LINK);
-			_httpSession.queue_message(message, function (_httpSession, message) {
-				if (message.status_code !== 200) {
-					//Nothing is done if page is not correctly fetched
-					return;
-				}
-				//Extracts the token from the page source
-				let response = message.response_body.data;
-				auth = response.substring(response.indexOf(TOKEN_KEY) + TOKEN_KEY.length + 1);
-				auth = auth.substring(0, TOKEN_LENGTH);
-				//Logs the data
-				global.log("areustatus@carissimi.eu -> Got new token: " + auth);
-				//Updates the data
-				this._loadData();
-			}.bind(this)
-			);
+
+			if(GNOME_VERSION >= 43){
+
+				_httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, function (_httpSession, message) {
+
+					//Gets the data
+					let response = _httpSession.send_and_read_finish(message).get_data();
+	
+					//Translates to string
+					if (response instanceof Uint8Array) {
+						response = ByteArray.toString(response);
+					}
+	
+					//Selects the auth code
+					auth = response.substring(response.indexOf(TOKEN_KEY) + TOKEN_KEY.length + 1);
+					auth = auth.substring(0, TOKEN_LENGTH);
+	
+					//Logs the data
+					global.log("areustatus@carissimi.eu -> Got new token: " + auth);
+					global.log("areustatus@carissimi.eu -> Gnome version: " + GNOME_VERSION);
+	
+					//Updates the data
+					this._loadData();
+	
+				}.bind(this)
+				);
+
+			}else{
+
+				_httpSession.queue_message(message, function (_httpSession, message) {
+					if (message.status_code !== 200) {
+						//Nothing is done if page is not correctly fetched
+						return;
+					}
+					//Extracts the token from the page source
+					let response = message.response_body.data;
+					auth = response.substring(response.indexOf(TOKEN_KEY) + TOKEN_KEY.length + 1);
+					auth = auth.substring(0, TOKEN_LENGTH);
+					//Logs the data
+					global.log("areustatus@carissimi.eu -> Got new token: " + auth);
+					//Updates the data
+					this._loadData();
+				}.bind(this)
+				);
+
+			}
+			
 
 		}
 
@@ -457,23 +494,56 @@ const AREUIndicator = GObject.registerClass(
 				global.log("areustatus@carissimi.eu -> Token is: " + auth);
 
 				//Fetches the data from the API
-				let params = {
-					p_auth: auth
-				};
 				_httpSession = new Soup.Session();
-				let message = Soup.form_request_new_from_hash('GET', API_LINK, params);
 
-				_httpSession.queue_message(message, function (_httpSession, message) {
-					if (message.status_code !== 200) {
-						//If data is not fetched correctly it tri es to refresh the token
-						this._refreshToken();
-						return;
-					}
-					//Updates the UI
-					let json = JSON.parse(message.response_body.data);
-					this._refreshUI(json);
-				}.bind(this)
-				);
+				let message = Soup.Message.new('GET', API_LINK + "?p_auth=" + auth);
+
+				if(GNOME_VERSION >= 43){
+
+					_httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, function (_httpSession, message) {
+
+						//Gets the data
+						let _jsonString = _httpSession.send_and_read_finish(message).get_data();
+	
+						//Translates to string
+						if (_jsonString instanceof Uint8Array) {
+							_jsonString = ByteArray.toString(_jsonString);
+						}		
+	
+						try {
+							//Trows an error if there's no json inside
+							if (!_jsonString) {
+								throw new Error("No data in response body");
+							}
+	
+							//Updates the UI
+							this._refreshUI(JSON.parse(_jsonString));
+						}
+						catch (e) {
+							//Refreshes the token if an error occured
+							_httpSession.abort();
+							this._refreshToken();
+						}
+	
+					}.bind(this)
+					);
+
+				}else{
+
+					_httpSession.queue_message(message, function (_httpSession, message) {
+						if (message.status_code !== 200) {
+							//If data is not fetched correctly it tri es to refresh the token
+							this._refreshToken();
+							return;
+						}
+						//Updates the UI
+						let json = JSON.parse(message.response_body.data);
+						this._refreshUI(json);
+					}.bind(this)
+					);
+
+				}
+				
 			}
 
 		}
